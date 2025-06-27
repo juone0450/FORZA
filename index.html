@@ -47,10 +47,18 @@
             -webkit-backdrop-filter: blur(10px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
         }
         .card:hover {
             transform: translateY(-10px) scale(1.02);
             box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+        .card-video-wrapper {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            aspect-ratio: 9 / 16; /* Vertical aspect ratio for videos */
         }
         .glow-divider {
             height: 1px;
@@ -94,6 +102,47 @@
         /* Overrides for text colors */
         .text-indigo-200 { color: #cccccc; }
         .text-indigo-400 { color: #a0a0a0; }
+        
+        /* Video Player Styles */
+        .phone-frame {
+            background: #111;
+            border-radius: 2rem;
+            padding: 0.5rem;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            max-width: 320px; /* Control max width for phone aspect ratio */
+        }
+        .phone-screen {
+            background: #000;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .video-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .phone-screen:hover .video-controls {
+            opacity: 1;
+        }
+        /* Glitch effect for footer link */
+        .glitch-effect {
+            text-shadow: 1px 1px 0px #cccccc, -1px -1px 0px #aaaaaa;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+        .glitch-effect:hover {
+            text-shadow: 2px 2px 0px #cccccc, -2px -2px 0px #aaaaaa, 0 0 5px #ffffff;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -105,12 +154,13 @@
             <!-- Navigation -->
             <div class="container mx-auto px-6 py-4">
                 <nav class="flex justify-between items-center">
-                    <h1 class="font-exo text-3xl font-bold brand-text">Forza</h1>
+                    <a href="#">
+                        <!-- Logo Image -->
+                        <img src="https://raw.githubusercontent.com/juone0450/FORZA/main/LOGO.png" alt="Logo de Forza" class="h-8 w-auto">
+                    </a>
                     <div class="hidden md:flex space-x-8 text-lg">
                         <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Colecciones</a>
-                        <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Lookbook</a>
                         <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Nosotros</a>
-                        <a href="#" class="text-[var(--secondary-glow)] hover:text-[var(--primary-glow)] transition-colors duration-300 font-bold">Tienda</a>
                     </div>
                     <button id="menu-btn" class="md:hidden focus:outline-none text-[var(--primary-glow)]">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -121,9 +171,7 @@
             <div id="mobile-menu" class="hidden md:hidden">
                 <nav class="flex flex-col space-y-4 items-center p-4 mt-4 bg-black/50 backdrop-blur-md">
                     <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Colecciones</a>
-                    <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Lookbook</a>
                     <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Nosotros</a>
-                    <a href="#" class="text-[var(--secondary-glow)] hover:text-[var(--primary-glow)] transition-colors font-bold">Tienda</a>
                 </nav>
             </div>
         </div>
@@ -143,8 +191,30 @@
         </div>
     </header>
 
+    <!-- Video Section -->
+    <section class="py-16 md:py-24 flex justify-center">
+        <div class="phone-frame scroll-reveal">
+            <div class="phone-screen">
+                <video id="intro-video" class="w-full h-full object-cover" loop muted autoplay playsinline>
+                    <source src="https://raw.githubusercontent.com/juone0450/FORZA/main/intro.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+                <div class="video-controls">
+                    <button id="play-pause-btn" class="text-white">
+                        <svg id="play-icon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4.018 15.59a.5.5 0 00.787.41l11-7a.5.5 0 000-.82l-11-7A.5.5 0 004.018 4.41v11.18z"></path></svg>
+                        <svg id="pause-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5.75 4.5a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25a.75.75 0 00-.75-.75zm8.5 0a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25a.75.75 0 00-.75-.75z"></path></svg>
+                    </button>
+                    <button id="volume-btn" class="text-white">
+                        <svg id="volume-on-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10.75 3.99a.75.75 0 00-1.5 0v12a.75.75 0 001.5 0v-12zM4.75 7.99a.75.75 0 00-1.5 0v4a.75.75 0 001.5 0v-4zm12 0a.75.75 0 00-1.5 0v4a.75.75 0 001.5 0v-4z"></path></svg>
+                        <svg id="volume-off-icon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4.99 8.243a.75.75 0 011.06 0L10 12.182l3.95-3.939a.75.75 0 111.06 1.06L11.06 13.242l3.95 3.94a.75.75 0 11-1.06 1.06L10 14.302l-3.95 3.94a.75.75 0 11-1.06-1.06l3.95-3.94-3.95-3.939a.75.75 0 010-1.06z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
-    <main class="py-16 md:py-24">
+    <main class="py-16 md:py-24 -mt-24">
         <div class="container mx-auto px-6">
             
             <section>
@@ -156,31 +226,43 @@
                 </div>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
                     
-                    <!-- Card 1: Colección Neón -->
-                    <div class="card p-8 scroll-reveal">
-                        <div class="flex items-center mb-4">
-                             <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.624L16.5 21.75l-.398-1.126a3.375 3.375 0 00-2.456-2.456L12.5 18l1.126-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.126a3.375 3.375 0 002.456 2.456L20.5 18l-1.126.398a3.375 3.375 0 00-2.456 2.456z" /></svg>
-                            <h3 class="font-exo text-2xl font-bold">Colección "Chrome"</h3>
+                    <!-- Card 1: Colección "Chrome" -->
+                    <div class="card p-4 scroll-reveal">
+                        <div class="card-video-wrapper">
+                            <video class="w-full h-full object-cover" loop muted autoplay playsinline>
+                                <source src="https://raw.githubusercontent.com/juone0450/FORZA/main/prendasuno.mp4" type="video/mp4">
+                            </video>
                         </div>
-                        <p class="text-indigo-200">Prendas audaces con acentos metálicos. Diseñadas para destacar en la jungla de asfalto, de día o de noche.</p>
+                        <div class="p-4">
+                            <h3 class="font-exo text-2xl font-bold mb-2">Colección "Chrome"</h3>
+                            <p class="text-indigo-200">Prendas audaces con acentos metálicos. Diseñadas para destacar en la jungla de asfalto, de día o de noche.</p>
+                        </div>
                     </div>
 
-                    <!-- Card 2: Línea Techwear -->
-                    <div class="card p-8 scroll-reveal" style="transition-delay: 200ms;">
-                         <div class="flex items-center mb-4">
-                            <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V21m0 0l-3-3m3 3l3-3" /></svg>
-                            <h3 class="font-exo text-2xl font-bold">Línea "Carbon"</h3>
+                    <!-- Card 2: Línea "Carbon" -->
+                    <div class="card p-4 scroll-reveal" style="transition-delay: 200ms;">
+                        <div class="card-video-wrapper">
+                            <video class="w-full h-full object-cover" loop muted autoplay playsinline>
+                                <source src="https://raw.githubusercontent.com/juone0450/FORZA/main/prendasdos.mp4" type="video/mp4">
+                            </video>
                         </div>
-                        <p class="text-indigo-200">Funcionalidad y estilo se unen. Tejidos inteligentes, cortes ergonómicos y detalles utilitarios para el nómada moderno.</p>
+                        <div class="p-4">
+                            <h3 class="font-exo text-2xl font-bold mb-2">Línea "Carbon"</h3>
+                            <p class="text-indigo-200">Funcionalidad y estilo seunen. Tejidos inteligentes, cortes ergonómicos y detalles utilitarios para el nómada moderno.</p>
+                        </div>
                     </div>
 
-                    <!-- Card 3: Esenciales Urbanos -->
-                    <div class="card p-8 scroll-reveal" style="transition-delay: 400ms;">
-                        <div class="flex items-center mb-4">
-                            <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5A2.25 2.25 0 0012.75 6H6A2.25 2.25 0 003.75 8.25v7.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25z" /></svg>
-                            <h3 class="font-exo text-2xl font-bold">Esenciales "Mono"</h3>
+                    <!-- Card 3: Esenciales "Mono" -->
+                    <div class="card p-4 scroll-reveal" style="transition-delay: 400ms;">
+                        <div class="card-video-wrapper">
+                            <video class="w-full h-full object-cover" loop muted autoplay playsinline>
+                                <source src="https://raw.githubusercontent.com/juone0450/FORZA/main/prendastres.mp4" type="video/mp4">
+                            </video>
                         </div>
-                        <p class="text-indigo-200">La base de tu guardarropa futurista. Piezas versátiles y atemporales con el toque distintivo de Forza.</p>
+                         <div class="p-4">
+                            <h3 class="font-exo text-2xl font-bold mb-2">Esenciales "Mono"</h3>
+                            <p class="text-indigo-200">La base de tu guardarropa futurista. Piezas versátiles y atemporales con el toque distintivo de Forza.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -197,7 +279,12 @@
                 </p>
             </div>
             <div class="glow-divider max-w-xl mx-auto mt-8 mb-8"></div>
-            <p class="font-exo text-indigo-400">&copy; 2024 Forza Corp. Redefiniendo el estilo urbano.</p>
+            <p class="font-exo text-indigo-400">
+                &copy; 2025 Forza. Redefiniendo el estilo urbano. Sitio creado por 
+                <a href="https://juanmartinbarrientos.github.io/Perfiles/" target="_blank" rel="noopener noreferrer" class="glitch-effect text-white hover:text-gray-300">
+                    Puff Studios
+                </a>
+            </p>
         </div>
     </footer>
 
@@ -313,6 +400,58 @@
             mouse.x = undefined;
             mouse.y = undefined;
         });
+
+        // --- Video Controls Script ---
+        const video = document.getElementById('intro-video');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const volumeBtn = document.getElementById('volume-btn');
+        const volumeOnIcon = document.getElementById('volume-on-icon');
+        const volumeOffIcon = document.getElementById('volume-off-icon');
+
+        function togglePlayPause() {
+            if (video.paused || video.ended) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        function updatePlayPauseIcon() {
+            if (video.paused || video.ended) {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            } else {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+        }
+
+        function toggleVolume() {
+            video.muted = !video.muted;
+        }
+
+        function updateVolumeIcon() {
+            if (video.muted) {
+                volumeOnIcon.classList.add('hidden');
+                volumeOffIcon.classList.remove('hidden');
+            } else {
+                volumeOnIcon.classList.remove('hidden');
+                volumeOffIcon.classList.add('hidden');
+            }
+        }
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        volumeBtn.addEventListener('click', toggleVolume);
+        video.addEventListener('play', updatePlayPauseIcon);
+        video.addEventListener('pause', updatePlayPauseIcon);
+        video.addEventListener('volumechange', updateVolumeIcon);
+
+        // Initial state update
+        updatePlayPauseIcon();
+        updateVolumeIcon();
+
     </script>
 </body>
 </html>
