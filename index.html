@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forza - El Futuro de la Moda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #000000;
+            --primary-glow: #ffffff;
+            --secondary-glow: #cccccc;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-exo {
+            font-family: 'Exo 2', sans-serif;
+        }
+        .hero-bg {
+            position: relative;
+            background-color: var(--dark-bg);
+            overflow: hidden;
+        }
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 1rem;
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+        .glow-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            opacity: 0.4;
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .icon-glow {
+            filter: drop-shadow(0 0 6px var(--primary-glow));
+        }
+        .brand-text {
+            color: var(--primary-glow);
+        }
+        .cyber-button {
+            background: transparent;
+            border: 2px solid var(--primary-glow);
+            color: var(--primary-glow);
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            display: inline-block; /* Added for proper anchor styling */
+        }
+        .cyber-button:hover {
+            background: var(--primary-glow);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        /* Overrides for text colors */
+        .text-indigo-200 { color: #cccccc; }
+        .text-indigo-400 { color: #a0a0a0; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Hero Section -->
+    <header class="hero-bg min-h-screen flex flex-col">
+        <canvas id="particle-canvas"></canvas>
+        <div class="hero-content w-full">
+            <!-- Navigation -->
+            <div class="container mx-auto px-6 py-4">
+                <nav class="flex justify-between items-center">
+                    <h1 class="font-exo text-3xl font-bold brand-text">Forza</h1>
+                    <div class="hidden md:flex space-x-8 text-lg">
+                        <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Colecciones</a>
+                        <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Lookbook</a>
+                        <a href="#" class="hover:text-[var(--primary-glow)] transition-colors duration-300">Nosotros</a>
+                        <a href="#" class="text-[var(--secondary-glow)] hover:text-[var(--primary-glow)] transition-colors duration-300 font-bold">Tienda</a>
+                    </div>
+                    <button id="menu-btn" class="md:hidden focus:outline-none text-[var(--primary-glow)]">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </nav>
+            </div>
+             <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <nav class="flex flex-col space-y-4 items-center p-4 mt-4 bg-black/50 backdrop-blur-md">
+                    <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Colecciones</a>
+                    <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Lookbook</a>
+                    <a href="#" class="hover:text-[var(--primary-glow)] transition-colors">Nosotros</a>
+                    <a href="#" class="text-[var(--secondary-glow)] hover:text-[var(--primary-glow)] transition-colors font-bold">Tienda</a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="hero-content flex-grow flex items-center justify-center text-center px-4">
+            <div>
+                <h2 class="font-exo text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+                    EL FUTURO DE LA <span class="brand-text">MODA URBANA</span>
+                </h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto text-indigo-200 mb-8">
+                    El estilo es tu nueva piel. Viste el mañana con diseños que fusionan tecnología, confort y una estética vanguardista.
+                </p>
+                <a href="https://wa.me/c/5491166853032" target="_blank" rel="noopener noreferrer" class="cyber-button text-lg">
+                    Explorar Colección
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-16 md:py-24">
+        <div class="container mx-auto px-6">
+            
+            <section>
+                <div class="max-w-4xl mx-auto text-center mb-12 scroll-reveal">
+                    <h2 class="font-exo text-3xl md:text-4xl font-bold mb-4">Nuestras Líneas de Diseño</h2>
+                    <p class="text-lg text-indigo-200">
+                        Cada pieza está diseñada para el individuo que vive entre el hoy y el mañana.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+                    
+                    <!-- Card 1: Colección Neón -->
+                    <div class="card p-8 scroll-reveal">
+                        <div class="flex items-center mb-4">
+                             <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.624L16.5 21.75l-.398-1.126a3.375 3.375 0 00-2.456-2.456L12.5 18l1.126-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.126a3.375 3.375 0 002.456 2.456L20.5 18l-1.126.398a3.375 3.375 0 00-2.456 2.456z" /></svg>
+                            <h3 class="font-exo text-2xl font-bold">Colección "Chrome"</h3>
+                        </div>
+                        <p class="text-indigo-200">Prendas audaces con acentos metálicos. Diseñadas para destacar en la jungla de asfalto, de día o de noche.</p>
+                    </div>
+
+                    <!-- Card 2: Línea Techwear -->
+                    <div class="card p-8 scroll-reveal" style="transition-delay: 200ms;">
+                         <div class="flex items-center mb-4">
+                            <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V21m0 0l-3-3m3 3l3-3" /></svg>
+                            <h3 class="font-exo text-2xl font-bold">Línea "Carbon"</h3>
+                        </div>
+                        <p class="text-indigo-200">Funcionalidad y estilo se unen. Tejidos inteligentes, cortes ergonómicos y detalles utilitarios para el nómada moderno.</p>
+                    </div>
+
+                    <!-- Card 3: Esenciales Urbanos -->
+                    <div class="card p-8 scroll-reveal" style="transition-delay: 400ms;">
+                        <div class="flex items-center mb-4">
+                            <svg class="w-10 h-10 text-[var(--primary-glow)] icon-glow mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5A2.25 2.25 0 0012.75 6H6A2.25 2.25 0 003.75 8.25v7.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25z" /></svg>
+                            <h3 class="font-exo text-2xl font-bold">Esenciales "Mono"</h3>
+                        </div>
+                        <p class="text-indigo-200">La base de tu guardarropa futurista. Piezas versátiles y atemporales con el toque distintivo de Forza.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-16 bg-gradient-to-t from-black/30 to-transparent">
+        <div class="container mx-auto px-6 text-center">
+             <div class="max-w-3xl mx-auto scroll-reveal">
+                <h2 class="font-exo text-3xl md:text-4xl font-bold mb-4">El Estilo es Inevitable.</h2>
+                <p class="text-lg text-indigo-200 mb-8">
+                    La moda del futuro no es una promesa lejana; es la realidad que estamos creando hoy. Forza es la base para tu próxima evolución de estilo.
+                </p>
+            </div>
+            <div class="glow-divider max-w-xl mx-auto mt-8 mb-8"></div>
+            <p class="font-exo text-indigo-400">&copy; 2024 Forza Corp. Redefiniendo el estilo urbano.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Script para el menú móvil ---
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Script de Animación de Scroll ---
+        const scrollElements = document.querySelectorAll('.scroll-reveal');
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend);
+        };
+        const displayScrollElement = (element) => element.classList.add('visible');
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 1.15)) {
+                    displayScrollElement(el);
+                }
+            });
+        };
+        window.addEventListener('scroll', handleScrollAnimation);
+        handleScrollAnimation();
+
+        // --- Script de Partículas ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let particleCanvasHeight = document.querySelector('.hero-bg').offsetHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = particleCanvasHeight;
+
+        let particlesArray;
+        const mouse = { x: null, y: null, radius: (canvas.height / 120) * (canvas.width / 120) };
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+        
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius + this.size) {
+                    if (mouse.x < this.x && this.x < canvas.width - this.size * 10) this.x += 3;
+                    if (mouse.x > this.x && this.x > this.size * 10) this.x -= 3;
+                    if (mouse.y < this.y && this.y < canvas.height - this.size * 10) this.y += 3;
+                    if (mouse.y > this.y && this.y > this.size * 10) this.y -= 3;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 1.5) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * .3) - .15;
+                let directionY = (Math.random() * .3) - .15;
+                let color = 'rgba(255, 255, 255, 0.5)';
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            particleCanvasHeight = document.querySelector('.hero-bg').offsetHeight;
+            canvas.width = innerWidth;
+            canvas.height = particleCanvasHeight;
+            mouse.radius = (canvas.height / 120) * (canvas.width / 120);
+            init();
+        });
+        
+        window.addEventListener('mouseout', () => {
+            mouse.x = undefined;
+            mouse.y = undefined;
+        });
+    </script>
+</body>
+</html>
